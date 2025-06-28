@@ -84,6 +84,7 @@ public class EmployeeController {
     @PostMapping
     @ApiOperation("新增员工")
     public Result save(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("新增员工: {}", employeeDTO);
         employeeService.save(employeeDTO);
         return Result.success();
 
@@ -101,6 +102,20 @@ public class EmployeeController {
         log.info("分页查询员工：{}", employeePageQueryDTO);
         PageResult pageResult=employeeService.PageQuery(employeePageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 设置员工状态
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("设置员工状态")
+    public Result startOrStop(@PathVariable Integer status,Long id){
+        log.info("设置员工状态：status={}, id={}", status, id);
+        employeeService.startOrStop(status, id);
+        return Result.success();
     }
 
 }
