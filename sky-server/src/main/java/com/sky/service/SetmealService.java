@@ -39,4 +39,11 @@ public interface SetmealService {
      * @param setmealDTO 套餐数据传输对象
      */
     void updateWithDish(SetmealDTO setmealDTO);
+
+    /**
+     * 启用或禁用套餐
+     * @param status,id 分类ID
+     * @return 套餐列表
+     */
+    void enableOrDisable(Integer status, Long id);
 }

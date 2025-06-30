@@ -93,6 +93,20 @@ public class SetmealController {
         setmealService.updateWithDish(setmealDTO);
         return Result.success();
     }
+
+    /**
+     * 启用或禁用套餐
+     * @param status 套餐状态
+     * @param id 套餐ID
+     * @return 成功结果
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用或禁用套餐")
+    public Result enableOrDisable(@PathVariable Integer status,Long id) {
+        log.info("启用或禁用套餐: id={}, status={}", id, status);
+        setmealService.enableOrDisable(status,id);
+        return Result.success();
+    }
 }
 
 

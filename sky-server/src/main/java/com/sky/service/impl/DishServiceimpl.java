@@ -34,6 +34,7 @@ public class DishServiceimpl implements DishService {
 
     @Autowired
     private SetmealMapper setmealMapper;
+
     /**
      * 添加菜品
      * @param dishDTO 菜品数据传输对象
@@ -181,8 +182,6 @@ public class DishServiceimpl implements DishService {
                 .id(id)
                 .status(status)
                 .build();
-        //TODO: 根据套餐状态决定菜品的启售卖
-
         dishMapper.update(dish);
     }
 
