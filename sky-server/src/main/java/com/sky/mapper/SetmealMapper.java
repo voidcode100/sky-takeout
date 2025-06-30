@@ -5,10 +5,7 @@ import com.sky.annotiation.AutoFill;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.enumeration.OperationType;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -46,4 +43,17 @@ public interface SetmealMapper {
      * @return 分页结果
      */
     Page<Setmeal> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
+
+    /**
+     * 根据ID查询套餐
+     * @param id 套餐ID
+     */
+    @Select("select * from setmeal where id = #{id}")
+    Setmeal selectById(Long id);
+
+    /**
+     * 根据ID删除套餐
+     * @param ids 套餐ID
+     */
+    void deleteByIds(List<Long> ids);
 }
