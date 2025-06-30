@@ -6,6 +6,7 @@ import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.entity.Category;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
@@ -92,6 +93,46 @@ public class SetmealServiceimpl implements SetmealService {
         //批量删除菜品与套餐的关联关系
         setmealDishMapper.deleteBySetmealIds(ids);
 
+    }
+
+    /**
+     * 根据ID查询套餐
+     * @param id
+     * @return
+     */
+    @Override
+    public SetmealVO getById(Long id) {
+        SetmealVO setmealVO = new SetmealVO();
+        //查询套餐基本信息
+        Setmeal setmeal = setmealMapper.selectById(id);
+
+        BeanUtils.copyProperties(setmeal,setmealVO);
+
+        //根据套餐ID查询关系表数据
+        List<SetmealDish> setmealDishes = setmealDishMapper.selectBySetmealId(id);
+        setmealVO.setSetmealDishes(setmealDishes);
+        return setmealVO;
+    }
+
+    @Override
+    public void updateWithDish(SetmealDTO setmealDTO) {
+        //更新套餐基本信息
+        Setmeal setmeal = new Setmeal();
+        BeanUtils.copyProperties(setmealDTO, setmeal);
+        setmealMapper.update(setmeal);
+
+        //更新套餐与菜品的关联关系
+        Long setmealId = setmeal.getId();
+        //先删除原有的关联关系
+        setmealDishMapper.deleteBySetmealId(setmealId);
+        //再插入新的关联关系
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        if (setmealDishes != null && setmealDishes.size() > 0) {
+            for (SetmealDish setmealDish : setmealDishes) {
+                setmealDish.setSetmealId(setmealId);
+            }
+            setmealDishMapper.insertBatch(setmealDishes);
+        }
     }
 
 }
