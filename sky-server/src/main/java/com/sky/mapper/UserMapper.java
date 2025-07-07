@@ -24,4 +24,12 @@ public interface UserMapper {
     @Insert("insert into user (openid, name, phone, sex, id_number, avatar, create_time) " +
             "values (#{openid},#{name}, #{phone},#{sex},#{idNumber},#{avatar}, #{createTime})")
     void insert(User user);
+
+    /**
+     * 根据ID查询用户信息
+     * @param id 用户ID
+     * @return 用户实体
+     */
+    @Select("select * from user where id = #{id}")
+    User getById(Long id);
 }
