@@ -15,19 +15,19 @@ import com.sky.result.PageResult;
 import com.sky.service.AddressBookService;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
-import com.sky.vo.OrderPaymentVO;
-import com.sky.vo.OrderStatisticsVO;
-import com.sky.vo.OrderSubmitVO;
-import com.sky.vo.OrderVO;
+import com.sky.vo.*;
 import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -503,5 +503,46 @@ public class OrderServiceimpl implements OrderService {
 
         String jsonString = JSON.toJSONString(hashMap);
         webSocketServer.sendToAllClient(jsonString);
+    }
+
+    /**
+     * 获取订单的营业额统计
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return 营业额统计视图对象
+     */
+    @Override
+    public TurnoverReportVO getTurnOverStatistics(LocalDate begin, LocalDate end) {
+        List<LocalDate> localDates = new ArrayList<>();
+        // 获取开始日期和结束日期之间的所有日期
+        localDates.add(begin);
+        while(!begin.equals(end)){
+            begin=begin.plusDays(1);
+            localDates.add(begin);
+        }
+
+        //获取每一天的营业额
+        List<Double> turnoverList = new ArrayList<>();
+        for (LocalDate localDate : localDates) {
+            //将LocalDate转换为LocalDateTime
+            LocalDateTime localDateTimeMIN = LocalDateTime.of(localDate, LocalTime.MIN);
+            LocalDateTime localDateTimeMAX = LocalDateTime.of(localDate, LocalTime.MAX);
+
+            //查询订单表，获取当天的营业额
+            HashMap hashMap = new HashMap();
+            hashMap.put("begin", localDateTimeMIN);
+            hashMap.put("end", localDateTimeMAX);
+            hashMap.put("status",Orders.COMPLETED);
+            Double turnover = orderMapper.sumByMap(hashMap);
+            turnover=turnover==null ? 0.0 : turnover;
+            turnoverList.add(turnover);
+
+        }
+
+        return TurnoverReportVO.builder()
+                .dateList(StringUtils.join(localDates,","))
+                .turnoverList(StringUtils.join(turnoverList,","))
+                .build();
     }
 }

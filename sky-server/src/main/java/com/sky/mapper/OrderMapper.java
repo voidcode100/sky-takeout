@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @Mapper
@@ -60,4 +61,11 @@ public interface OrderMapper {
      */
     @Select("select * from orders where status=#{status} and order_time < #{time}")
     List<Orders> getByStausAndOrderTime(Integer status, LocalDateTime time);
+
+    /**
+     * 根据订单状态和下单时间统计订单营业额
+     *
+     * @param hashMap 订单号
+     */
+    Double sumByMap(HashMap hashMap);
 }

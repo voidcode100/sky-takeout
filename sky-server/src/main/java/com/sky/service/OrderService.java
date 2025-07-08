@@ -2,10 +2,9 @@ package com.sky.service;
 
 import com.sky.dto.*;
 import com.sky.result.PageResult;
-import com.sky.vo.OrderPaymentVO;
-import com.sky.vo.OrderStatisticsVO;
-import com.sky.vo.OrderSubmitVO;
-import com.sky.vo.OrderVO;
+import com.sky.vo.*;
+
+import java.time.LocalDate;
 
 public interface OrderService {
     /**
@@ -115,4 +114,13 @@ public interface OrderService {
      * @param id 订单ID
      */
     void reminder(Long id);
+
+    /**
+     * 获取订单统计数据
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return 订单统计视图对象
+     */
+    TurnoverReportVO getTurnOverStatistics(LocalDate begin, LocalDate end);
 }
