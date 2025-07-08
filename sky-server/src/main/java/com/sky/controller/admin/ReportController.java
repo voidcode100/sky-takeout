@@ -4,10 +4,7 @@ import com.sky.mapper.OrderMapper;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.service.ReportService;
-import com.sky.vo.OrderReportVO;
-import com.sky.vo.OrderStatisticsVO;
-import com.sky.vo.TurnoverReportVO;
-import com.sky.vo.UserReportVO;
+import com.sky.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -65,12 +62,28 @@ public class ReportController {
      * @return 用户统计视图对象
      */
     @GetMapping("/ordersStatistics")
-    @ApiOperation("获取用户统计数据")
+    @ApiOperation("获取订单统计数据")
     public Result<OrderReportVO> getOrderStatistics(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
                                                    @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end){
-        log.info("用户统计表: begin={}, end={}", begin, end);
+        log.info("订单统计表: begin={}, end={}", begin, end);
         OrderReportVO orderReportVO = reportService.getOrderStatistics(begin,end);
         return Result.success(orderReportVO);
+
+    }
+
+    /**
+     * 热销top10统计
+     * @param begin 开始日期
+     * @param end 结束日期
+     * @return 用户统计视图对象
+     */
+    @GetMapping("/top10")
+    @ApiOperation("获取用户统计数据")
+    public Result<SalesTop10ReportVO> getSaleTop10(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+                                                   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end){
+        log.info("Top10统计表: begin={}, end={}", begin, end);
+        SalesTop10ReportVO salesTop10ReportVO = reportService.getSaleTop10(begin,end);
+        return Result.success(salesTop10ReportVO);
 
     }
 
