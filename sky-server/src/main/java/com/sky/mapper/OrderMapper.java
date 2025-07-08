@@ -6,6 +6,9 @@ import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Controller;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Mapper
 public interface OrderMapper {
     /**
@@ -49,4 +52,12 @@ public interface OrderMapper {
 
     @Select("select count(*) from orders where status = #{confirmed}")
     Integer countByStatus(Integer confirmed);
+
+    /**
+     * 根据订单状态和下单时间查询订单
+     *
+     * @param status,time 订单号
+     */
+    @Select("select * from orders where status=#{status} and order_time < #{time}")
+    List<Orders> getByStausAndOrderTime(Integer status, LocalDateTime time);
 }
