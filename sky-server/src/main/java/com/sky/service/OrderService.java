@@ -115,12 +115,5 @@ public interface OrderService {
      */
     void reminder(Long id);
 
-    /**
-     * 获取订单统计数据
-     *
-     * @param begin 开始日期
-     * @param end   结束日期
-     * @return 订单统计视图对象
-     */
-    TurnoverReportVO getTurnOverStatistics(LocalDate begin, LocalDate end);
+
 }

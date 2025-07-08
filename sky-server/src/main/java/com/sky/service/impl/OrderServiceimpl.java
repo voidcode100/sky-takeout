@@ -505,44 +505,5 @@ public class OrderServiceimpl implements OrderService {
         webSocketServer.sendToAllClient(jsonString);
     }
 
-    /**
-     * 获取订单的营业额统计
-     *
-     * @param begin 开始日期
-     * @param end   结束日期
-     * @return 营业额统计视图对象
-     */
-    @Override
-    public TurnoverReportVO getTurnOverStatistics(LocalDate begin, LocalDate end) {
-        List<LocalDate> localDates = new ArrayList<>();
-        // 获取开始日期和结束日期之间的所有日期
-        localDates.add(begin);
-        while(!begin.equals(end)){
-            begin=begin.plusDays(1);
-            localDates.add(begin);
-        }
 
-        //获取每一天的营业额
-        List<Double> turnoverList = new ArrayList<>();
-        for (LocalDate localDate : localDates) {
-            //将LocalDate转换为LocalDateTime
-            LocalDateTime localDateTimeMIN = LocalDateTime.of(localDate, LocalTime.MIN);
-            LocalDateTime localDateTimeMAX = LocalDateTime.of(localDate, LocalTime.MAX);
-
-            //查询订单表，获取当天的营业额
-            HashMap hashMap = new HashMap();
-            hashMap.put("begin", localDateTimeMIN);
-            hashMap.put("end", localDateTimeMAX);
-            hashMap.put("status",Orders.COMPLETED);
-            Double turnover = orderMapper.sumByMap(hashMap);
-            turnover=turnover==null ? 0.0 : turnover;
-            turnoverList.add(turnover);
-
-        }
-
-        return TurnoverReportVO.builder()
-                .dateList(StringUtils.join(localDates,","))
-                .turnoverList(StringUtils.join(turnoverList,","))
-                .build();
-    }
 }

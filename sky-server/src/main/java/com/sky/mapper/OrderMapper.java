@@ -68,4 +68,6 @@ public interface OrderMapper {
      * @param hashMap 订单号
      */
     Double sumByMap(HashMap hashMap);
+
+
 }

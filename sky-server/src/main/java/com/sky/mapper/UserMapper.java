@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.HashMap;
+
 @Mapper
 public interface UserMapper {
     /**
@@ -32,4 +34,11 @@ public interface UserMapper {
      */
     @Select("select * from user where id = #{id}")
     User getById(Long id);
+
+    /**
+     * 根据订单状态和下单时间统计订单数量
+     *
+     * @param hashMap 订单号
+     */
+    Integer countByMap(HashMap hashMap);
 }
