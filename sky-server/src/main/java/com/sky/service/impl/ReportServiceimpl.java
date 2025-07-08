@@ -3,7 +3,9 @@ package com.sky.service.impl;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
+import com.sky.service.OrderService;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,9 @@ public class ReportServiceimpl implements ReportService {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private OrderService orderService;
+
     /**
      * 获取订单的营业额统计
      *
@@ -111,6 +116,71 @@ public class ReportServiceimpl implements ReportService {
                 .dateList(StringUtils.join(localDates,","))
                 .totalUserList(StringUtils.join(totalUserList,","))
                 .newUserList(StringUtils.join(addUserList,","))
+                .build();
+
+    }
+
+    /**
+     * 获取订单统计数据
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return 订单统计视图对象
+     */
+    @Override
+    public OrderReportVO getOrderStatistics(LocalDate begin, LocalDate end) {
+        List<LocalDate> localDates = new ArrayList<>();
+        //获取从开始到结束日期之间的所有日期
+        localDates.add(begin);
+        while(!begin.equals(end))
+        {
+            begin=begin.plusDays(1);
+            localDates.add(begin);
+        }
+
+        //获取每一天的订单数
+        List<Integer> orderCountList = new ArrayList<>();
+        //获取每一天的有效订单数
+        List<Integer> validOrderCountList = new ArrayList<>();
+
+        for (LocalDate localDate : localDates) {
+            LocalDateTime localDateTimeMIN = LocalDateTime.of(localDate,LocalTime.MIN);
+            LocalDateTime localDateTimeMAX = LocalDateTime.of(localDate,LocalTime.MAX);
+
+            HashMap hashMap = new HashMap();
+            hashMap.put("begin", localDateTimeMIN);
+            hashMap.put("end", localDateTimeMAX);
+
+            //查询订单表，获取当天的订单数
+            Integer orderCount = orderMapper.countByMap(hashMap);
+
+            hashMap.put("status",Orders.COMPLETED);
+            //查询订单表，获取当天的有效订单数
+            Integer validOrderCount = orderMapper.countByMap(hashMap);
+
+            orderCountList.add(orderCount);
+            validOrderCountList.add(validOrderCount);
+        }
+
+        //计算总订单数
+        Integer totalOrderCount = orderCountList.stream().reduce(Integer::sum).get();
+        //计算总有效订单数
+        Integer totalValidOrderCount = validOrderCountList.stream().reduce(Integer::sum).get();
+        //计算完成率
+        Double orderCompleteRate=0.0;
+        if(totalOrderCount!=0)
+        {
+            orderCompleteRate = (double) totalValidOrderCount / totalOrderCount;
+        }
+
+
+        return OrderReportVO.builder()
+                .dateList(StringUtils.join(localDates,","))
+                .orderCountList(StringUtils.join(orderCountList,","))
+                .validOrderCountList(StringUtils.join(validOrderCountList,","))
+                .totalOrderCount(totalOrderCount)
+                .validOrderCount(totalValidOrderCount)
+                .orderCompletionRate(orderCompleteRate)
                 .build();
 
     }

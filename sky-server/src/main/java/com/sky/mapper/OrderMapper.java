@@ -70,4 +70,5 @@ public interface OrderMapper {
     Double sumByMap(HashMap hashMap);
 
 
+    Integer countByMap(HashMap hashMap);
 }
